@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardContent, CardActions, Box } from '@mui/material';
+import { Card, CardHeader, CardContent, Box } from '@mui/material';
 
 const SectionCard = ({ title, subheader, actions, children, sx }) => {
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
 import {
     Container,
@@ -76,9 +76,7 @@ const ManualFeedFormulationPage = () => {
         else setIngredients(ingredientData);
     };
 
-    useEffect(() => {
-        calculateTotals();
-    }, [formulation]);
+    // totals effect placed after calculateTotals definition
 
     const handleProfileChange = (profileId) => {
         const profile = profiles.find(p => p.id === parseInt(profileId));
@@ -107,7 +105,7 @@ const ManualFeedFormulationPage = () => {
         setFormulation(newFormulation);
     };
 
-    const calculateTotals = () => {
+    const calculateTotals = useCallback(() => {
         const newTotals = {
             pk: 0, me: 0, sk: 0, lk: 0, ca: 0, p: 0, totalPercentage: 0
         };
@@ -127,7 +125,11 @@ const ManualFeedFormulationPage = () => {
         });
 
         setTotals(newTotals);
-    };
+    }, [formulation, ingredients]);
+
+    useEffect(() => {
+        calculateTotals();
+    }, [calculateTotals]);
 
     const handleSaveFormulation = async () => {
         const formulationName = prompt('Please enter a name for your formulation:');
@@ -294,6 +296,50 @@ const ManualFeedFormulationPage = () => {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                    </SectionCard>
+                </Grid>
+
+                {/* Ingredient Nutrient Content */}
+                <Grid item xs={12}>
+                    <SectionCard title="Kandungan Bahan Terpilih">
+                        {formulation.filter((f) => f.ingredientId).length === 0 ? (
+                            <Typography color="text.secondary">Pilih bahan pada tabel formulasi untuk melihat kandungan nutrisi tiap bahan.</Typography>
+                        ) : (
+                            <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+                                <Table size="small">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Bahan</TableCell>
+                                            <TableCell>PK (%)</TableCell>
+                                            <TableCell>ME (kcal/kg)</TableCell>
+                                            <TableCell>SK (%)</TableCell>
+                                            <TableCell>LK (%)</TableCell>
+                                            <TableCell>Ca (%)</TableCell>
+                                            <TableCell>P (%)</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {formulation
+                                            .filter((f) => f.ingredientId)
+                                            .map((f, idx) => {
+                                                const ing = ingredients.find((i) => i.id === parseInt(f.ingredientId));
+                                                if (!ing) return null;
+                                                return (
+                                                    <TableRow key={idx}>
+                                                        <TableCell>{ing.name}</TableCell>
+                                                        <TableCell>{Number(ing.pk || 0).toFixed(2)}</TableCell>
+                                                        <TableCell>{Number(ing.me || 0).toFixed(0)}</TableCell>
+                                                        <TableCell>{Number(ing.sk || 0).toFixed(2)}</TableCell>
+                                                        <TableCell>{Number(ing.lk || 0).toFixed(2)}</TableCell>
+                                                        <TableCell>{Number(ing.ca || 0).toFixed(2)}</TableCell>
+                                                        <TableCell>{Number(ing.p || 0).toFixed(2)}</TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
                     </SectionCard>
                 </Grid>
 
