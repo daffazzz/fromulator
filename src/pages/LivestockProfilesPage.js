@@ -78,7 +78,7 @@ const LivestockProfilesPage = () => {
                     </Button>
                 }
             >
-                <TableContainer component={Paper}>
+                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
                     <Table size="small">
                         <TableHead>
                             <TableRow>

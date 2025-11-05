@@ -73,7 +73,7 @@ const IngredientsPage = () => {
                     </Button>
                 }
             >
-                <TableContainer component={Paper}>
+                <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
                     <Table size="small">
                         <TableHead>
                             <TableRow>
